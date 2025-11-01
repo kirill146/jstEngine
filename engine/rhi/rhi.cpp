@@ -1,5 +1,6 @@
 #include "rhi.h"
 #include "vkRHI.h"
+#include "d3d12RHI.h"
 #include <iostream>
 #include <stdexcept>
 
@@ -13,8 +14,9 @@ JstResult jstInitRHI(JstGraphicsBackend backend, JstBool validationEnabled) {
       jst::InitVulkan(validationEnabled);
       break;
     case JstD3D12:
+      jst::InitD3D12(validationEnabled);
       std::cout << "Selected D3D12 backend" << std::endl;
-      return JstFailed; // not supported yet
+      break;
     default:
       return JstFailed;
     }

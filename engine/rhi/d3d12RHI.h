@@ -2,5 +2,5 @@
 #include "rhi.h"
 
 namespace jst {
-void InitVulkan(JstBool validationEnabled);
+void InitD3D12(JstBool validationEnabled);
 }
