@@ -2,6 +2,7 @@
 BasedOnStyle: LLVM
 AlignEscapedNewlines: Left
 AllowShortFunctionsOnASingleLine: Inline
+AllowShortEnumsOnASingleLine: false
 BraceWrapping:
   AfterControlStatement: MultiLine
 BreakBeforeBraces: Custom

@@ -1,6 +1,7 @@
 #include <iostream>
+#include "rhi/rhi.h"
 
 int main() {
-  std::cout << "Hello from jstEngine!" << std::endl;
+  jstInitRHI(JstVulkan);
   return 0;
 }
