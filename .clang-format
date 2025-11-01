@@ -1,0 +1,14 @@
+---
+BasedOnStyle: LLVM
+AlignEscapedNewlines: Left
+AllowShortFunctionsOnASingleLine: Inline
+BraceWrapping:
+  AfterControlStatement: MultiLine
+BreakBeforeBraces: Custom
+BreakConstructorInitializers: BeforeComma
+BreakTemplateDeclarations: Yes
+ColumnLimit: 120
+Cpp11BracedListStyle: false
+KeepEmptyLines:
+  AtStartOfBlock: false
+PointerAlignment: Left
