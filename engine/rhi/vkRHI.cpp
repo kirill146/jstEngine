@@ -4,6 +4,7 @@
 #include <string>
 #include <volk/volk.h>
 #include <vulkan/vk_enum_string_helper.h>
+#include <vector>
 
 WINBASEAPI BOOL WINAPI IsDebuggerPresent();
 
@@ -26,22 +27,42 @@ static void CheckVulkanError(VkResult err, char const* file, uint32_t line) {
 #define VK_CHECK(err) CheckVulkanError(err, __FILE__, __LINE__)
 
 static VkInstance instance;
+static std::vector<JstPhysicalDevice> physicalDevices;
+
+int jstVkGetPhysicalDevices(JstPhysicalDevice const** physicalDevicesOut) {
+  *physicalDevicesOut = physicalDevices.data();
+  return (int)physicalDevices.size();
+}
 
 namespace jst {
 
-void InitVulkan() {
+void InitVulkan(JstBool validationEnabled) {
   VK_CHECK(volkInitialize());
 
   VkApplicationInfo applicationInfo{
     .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-    .apiVersion = VK_API_VERSION_1_3
+    .apiVersion = VK_API_VERSION_1_3,
   };
   VkInstanceCreateInfo instanceInfo{
     .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-    .pApplicationInfo = &applicationInfo
+    .pApplicationInfo = &applicationInfo,
   };
   VK_CHECK(vkCreateInstance(&instanceInfo, nullptr, &instance));
 
   volkLoadInstanceOnly(instance);
+
+  uint32_t physicalDevicesCount;
+  VK_CHECK(vkEnumeratePhysicalDevices(instance, &physicalDevicesCount, nullptr));
+  std::vector<VkPhysicalDevice> vkDevices;
+  vkDevices.resize(physicalDevicesCount);
+  VK_CHECK(vkEnumeratePhysicalDevices(instance, &physicalDevicesCount, vkDevices.data()));
+  physicalDevices.resize(physicalDevicesCount);
+  for (int i = 0; i < physicalDevicesCount; i++) {
+    VkPhysicalDeviceProperties props;
+    vkGetPhysicalDeviceProperties(vkDevices[i], &props);
+    strncpy_s(physicalDevices[i].name, sizeof(physicalDevices[i].name), props.deviceName, sizeof(props.deviceName) - 1);
+  }
+
+  jstGetPhysicalDevices = jstVkGetPhysicalDevices;
 }
 } // namespace jst

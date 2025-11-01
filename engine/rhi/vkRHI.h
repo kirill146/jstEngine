@@ -2,5 +2,5 @@
 #include "rhi.h"
 
 namespace jst {
-void InitVulkan();
+void InitVulkan(JstBool validationEnabled);
 }

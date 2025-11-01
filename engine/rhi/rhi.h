@@ -14,7 +14,16 @@ enum JstGraphicsBackend {
   JstD3D12,
 };
 
-JstResult jstInitRHI(JstGraphicsBackend backend);
+struct JstPhysicalDevice {
+  char name[256];
+};
+
+typedef int JstBool;
+
+typedef int(*PFN_jstGetPhysicalDevices)(JstPhysicalDevice const** physicalDevices);
+extern PFN_jstGetPhysicalDevices jstGetPhysicalDevices;
+
+JstResult jstInitRHI(JstGraphicsBackend backend, JstBool validationEnabled);
 
 #ifdef __cplusplus
 }
