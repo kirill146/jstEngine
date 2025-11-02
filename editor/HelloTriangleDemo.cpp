@@ -1,5 +1,4 @@
 #include "HelloTriangleDemo.h"
-#include "rhi/rhi.h"
 #include <iostream>
 #include <stdexcept>
 
@@ -18,17 +17,29 @@ void CheckJstError(JstResult err, const char* file, int line) {
 #define JST_CHECK(err) CheckJstError(err, __FILE__, __LINE__)
 
 jst::HelloTriangleDemo::HelloTriangleDemo() {
-  JST_CHECK(jstInitRHI(JstD3D12, true));
+  JST_CHECK(jstInitRHI(JstVulkan, true));
   const JstPhysicalDevice* physicalDevices;
   int nDevices = jstGetPhysicalDevices(&physicalDevices);
   std::cout << "Found " << nDevices << " devices" << std::endl;
+
+  int physicalDeviceId = -1;
   for (int i = 0; i < nDevices; i++) {
     std::cout << i << ' ' << physicalDevices[i].name << std::endl;
+    if (std::string(physicalDevices[i].name).find("NVIDIA") != 0) { // TODO: bruh
+      physicalDeviceId = i;
+    }
   }
+  if (physicalDeviceId == -1) {
+    throw std::runtime_error("Device not found");
+  }
+
+  JstQueue queue;
+  JST_CHECK(jstCreateDevice(physicalDeviceId, &device, &queue, nullptr, nullptr));
 }
 
 void jst::HelloTriangleDemo::Run() {}
 
 jst::HelloTriangleDemo::~HelloTriangleDemo() {
+  jstDestroyDevice(device);
   jstDestroyRHI();
 }

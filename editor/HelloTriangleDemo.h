@@ -1,4 +1,5 @@
 #pragma once
+#include "rhi/rhi.h"
 
 namespace jst {
 class HelloTriangleDemo {
@@ -7,6 +8,6 @@ public:
   void Run();
   ~HelloTriangleDemo();
 private:
-
+  JstDevice device;
 };
 } // namespace jst
