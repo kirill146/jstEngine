@@ -4,8 +4,9 @@
 #include <iostream>
 #include <stdexcept>
 
-PFN_jstGetPhysicalDevices jstGetPhysicalDevices;
-PFN_jstDestroyRHI jstDestroyRHI;
+#define JST_DECLARE_RHI_FUNCTION(f, ret, args) PFN_##jst##f jst##f
+JST_FOREACH_RHI_FUNCTION(JST_DECLARE_RHI_FUNCTION);
+#undef JST_DECLARE_RHI_FUNCTION
 
 JstResult jstInitRHI(JstGraphicsBackend backend, JstBool validationEnabled) {
   try {

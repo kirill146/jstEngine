@@ -18,7 +18,7 @@ void CheckJstError(JstResult err, const char* file, int line) {
 #define JST_CHECK(err) CheckJstError(err, __FILE__, __LINE__)
 
 jst::HelloTriangleDemo::HelloTriangleDemo() {
-  JST_CHECK(jstInitRHI(JstVulkan, true));
+  JST_CHECK(jstInitRHI(JstD3D12, true));
   const JstPhysicalDevice* physicalDevices;
   int nDevices = jstGetPhysicalDevices(&physicalDevices);
   std::cout << "Found " << nDevices << " devices" << std::endl;

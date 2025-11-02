@@ -16,7 +16,7 @@ static int GetPhysicalDevices(const JstPhysicalDevice** physicalDevicesOut) {
   return (int)physicalDevices.size();
 }
 
-static void DestroyRHI2() {
+static void DestroyRHI() {
 	physicalDevices.clear();
 }
 
@@ -32,6 +32,7 @@ void jst::InitD3D12(JstBool validationEnabled) {
 		wcstombs(physicalDevices.back().name, curAdapterDesc.Description, sizeof(physicalDevices.back().name));
 	}
 
-	jstGetPhysicalDevices = GetPhysicalDevices;
-	jstDestroyRHI = DestroyRHI2;
+#define JST_SET_RHI_FUNCTION(f, ret, args) jst##f = f
+	JST_FOREACH_RHI_FUNCTION(JST_SET_RHI_FUNCTION);
+#undef JST_SET_RHI_FUNCTION
 }

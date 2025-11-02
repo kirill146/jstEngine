@@ -7,7 +7,7 @@
 #include <volk/volk.h>
 #include <vulkan/vk_enum_string_helper.h>
 
-extern "C" int IsDebuggerPresent();
+extern "C" __declspec(dllimport) int IsDebuggerPresent();
 
 static void CheckVulkanError(VkResult err, const char* file, uint32_t line) {
   if (err == VK_SUCCESS) {
@@ -69,7 +69,8 @@ void InitVulkan(JstBool validationEnabled) {
     strncpy_s(physicalDevices[i].name, sizeof(physicalDevices[i].name), props.deviceName, sizeof(props.deviceName) - 1);
   }
 
-  jstGetPhysicalDevices = GetPhysicalDevices;
-  jstDestroyRHI = DestroyRHI;
+#define JST_SET_RHI_FUNCTION(f, ret, args) jst##f = f
+	JST_FOREACH_RHI_FUNCTION(JST_SET_RHI_FUNCTION);
+#undef JST_SET_RHI_FUNCTION
 }
 } // namespace jst
