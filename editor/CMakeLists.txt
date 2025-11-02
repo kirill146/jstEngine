@@ -1,5 +1,7 @@
 add_executable(editor
   main.cpp
+  HelloTriangleDemo.h
+  HelloTriangleDemo.cpp
 )
 
 target_link_libraries(editor engine)

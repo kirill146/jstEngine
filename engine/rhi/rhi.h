@@ -20,8 +20,11 @@ struct JstPhysicalDevice {
 
 typedef int JstBool;
 
-typedef int(*PFN_jstGetPhysicalDevices)(JstPhysicalDevice const** physicalDevices);
+typedef int(*PFN_jstGetPhysicalDevices)(const JstPhysicalDevice** physicalDevices);
 extern PFN_jstGetPhysicalDevices jstGetPhysicalDevices;
+
+typedef void(*PFN_jstDestroyRHI)();
+extern PFN_jstDestroyRHI jstDestroyRHI;
 
 JstResult jstInitRHI(JstGraphicsBackend backend, JstBool validationEnabled);
 

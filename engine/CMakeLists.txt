@@ -9,5 +9,9 @@ add_library(engine
   rhi/d3d12RHI.h
   rhi/d3d12RHI.cpp
 )
-target_link_libraries(engine PRIVATE Vulkan::volk d3d12 dxgi)
+target_link_libraries(engine PRIVATE d3d12 dxgi)
 target_compile_features(engine PUBLIC cxx_std_20)
+target_include_directories(engine PRIVATE
+  ${Vulkan_INCLUDE_DIR}
+  ../external/agility-sdk-${AGILITY_SDK_VERSION}/build/native/include
+)

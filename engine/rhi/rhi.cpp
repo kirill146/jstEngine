@@ -1,10 +1,11 @@
 #include "rhi.h"
-#include "vkRHI.h"
 #include "d3d12RHI.h"
+#include "vkRHI.h"
 #include <iostream>
 #include <stdexcept>
 
 PFN_jstGetPhysicalDevices jstGetPhysicalDevices;
+PFN_jstDestroyRHI jstDestroyRHI;
 
 JstResult jstInitRHI(JstGraphicsBackend backend, JstBool validationEnabled) {
   try {
@@ -25,3 +26,4 @@ JstResult jstInitRHI(JstGraphicsBackend backend, JstBool validationEnabled) {
   }
   return JstSuccess;
 }
+
