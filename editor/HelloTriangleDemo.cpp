@@ -25,7 +25,7 @@ jst::HelloTriangleDemo::HelloTriangleDemo() {
   int physicalDeviceId = -1;
   for (int i = 0; i < nDevices; i++) {
     std::cout << i << ' ' << physicalDevices[i].name << std::endl;
-    if (std::string(physicalDevices[i].name).find("NVIDIA") != 0) { // TODO: bruh
+    if (std::string(physicalDevices[i].name).find("NVIDIA") != std::string::npos) { // TODO: bruh
       physicalDeviceId = i;
     }
   }
