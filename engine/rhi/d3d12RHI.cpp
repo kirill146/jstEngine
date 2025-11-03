@@ -103,6 +103,13 @@ static void DestroyDevice(JstDevice device) {
   delete dev;
 }
 
+static JstResult CreateSwapchain(JstDevice device, JstQueue graphicsQueue, void* windowHandle, uint32_t minImageCount, uint32_t width, uint32_t height,
+  JstSwapchain* swapchain) {
+  return JstFailed;
+}
+
+static void DestroySwapchain(JstSwapchain swapchain) {}
+
 void jst::InitD3D12(JstBool validationEnabled) {
   // enable the debug layer
   {

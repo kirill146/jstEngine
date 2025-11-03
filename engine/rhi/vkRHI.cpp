@@ -33,6 +33,18 @@ struct QueueFamilyIndices {
   int transferQueueFamilyIndex = -1;
 };
 
+struct JstVkDevice {
+  VkDevice device;
+  VkPhysicalDevice physicalDevice;
+};
+
+struct JstVkSwapchain {
+  VkSurfaceKHR surface;
+  VkSwapchainKHR swapchain;
+  VkQueue queue;
+  VkDevice device;
+};
+
 static std::vector<JstPhysicalDevice> physicalDevices;
 
 static VkInstance instance;
@@ -50,7 +62,7 @@ static void DestroyRHI() {
 }
 
 static JstResult CreateDevice(int physicalDeviceId, JstDevice* device, JstQueue* graphicsQueue, JstQueue* computeQueue,
-                         JstQueue* transferQueue) {
+                              JstQueue* transferQueue) {
   const float queuePriority = 1.0f;
   VkDeviceQueueCreateInfo queueInfos[3] = {};
   uint32_t nQueues = 0;
@@ -75,23 +87,87 @@ static JstResult CreateDevice(int physicalDeviceId, JstDevice* device, JstQueue*
     queueInfos[nQueues].pQueuePriorities = &queuePriority;
     nQueues++;
   }
+
   VkDeviceCreateInfo deviceInfo{
     .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
     .queueCreateInfoCount = nQueues,
     .pQueueCreateInfos = queueInfos,
   };
-  if (vkCreateDevice(vkPhysicalDevices[physicalDeviceId], &deviceInfo, nullptr, (VkDevice*)device) == VK_SUCCESS) {
-    return JstSuccess;
+  VkDevice vkDevice;
+  if (vkCreateDevice(vkPhysicalDevices[physicalDeviceId], &deviceInfo, nullptr, &vkDevice) != VK_SUCCESS) {
+    return JstFailed;
   }
-  return JstFailed;
+
+  JstVkDevice* jstVkDevice = new JstVkDevice{
+    .device = vkDevice,
+    .physicalDevice = vkPhysicalDevices[physicalDeviceId],
+  };
+  *device = (JstDevice)jstVkDevice;
+
+  return JstSuccess;
 }
 
 static void DestroyDevice(JstDevice device) {
-  vkDestroyDevice((VkDevice)device, nullptr);
+  vkDestroyDevice(((JstVkDevice*)device)->device, nullptr);
 }
 
-static JstResult CreateSwapchain(int width, int height) {
+static JstResult CreateSwapchain(JstDevice device, JstQueue graphicsQueue, void* windowHandle, uint32_t minImageCount,
+                                 uint32_t width, uint32_t height, JstSwapchain* swapchain) {
+  VkWin32SurfaceCreateInfoKHR surfaceInfo{
+    .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+    .hinstance = GetModuleHandle(nullptr),
+    .hwnd = (HWND)windowHandle,
+  };
+  VkSurfaceKHR surface;
+  VK_CHECK(vkCreateWin32SurfaceKHR(instance, &surfaceInfo, nullptr, &surface));
+
+  JstVkDevice* jstVkDevice = (JstVkDevice*)device;
+  uint32_t nFormats;
+  VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(jstVkDevice->physicalDevice, surface, &nFormats, nullptr));
+  std::vector<VkSurfaceFormatKHR> formats;
+  formats.resize(nFormats);
+  VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(jstVkDevice->physicalDevice, surface, &nFormats, formats.data()));
+
+  // VkBool32 isSupported;
+  // VK_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, surface, &isSupported));
+  // if (!isSupported) {
+  //   throw std::runtime_error("Surface is not supported");
+  // }
+
+  // VkSwapchainCreateInfoKHR swapchainInfo{
+  //   .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+  //   .surface = surface,
+  //   .minImageCount = minImageCount,
+  //   .imageFormat = surfaceFormat.format,
+  //   .imageColorSpace = surfaceFormat.colorSpace,
+  //   .imageExtent = extent,
+  //   .imageArrayLayers = 1u,
+  //   .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, // subset of surfaceCapabilities.supportedUsageFlags
+  //   .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
+  //   .preTransform = surfaceCapabilities.currentTransform,
+  //   .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+  //   .presentMode = presentMode,
+  //   .clipped = VK_TRUE, // todo maybe VK_FALSE
+  // };
+  VkDevice vkDevice = ((JstVkDevice*)device)->device;
+  // VkSwapchainKHR vkSwapchain;
+  // VK_CHECK(vkCreateSwapchainKHR(vkDevice, &swapchainInfo, nullptr, &vkSwapchain));
+
+  JstVkSwapchain* jstVkSwapchain = new JstVkSwapchain{
+    .surface = surface,
+    //.swapchain = vkSwapchain,
+    .queue = (VkQueue)graphicsQueue,
+    .device = vkDevice,
+  };
+  *swapchain = (JstSwapchain)jstVkSwapchain;
+
   return JstSuccess;
+}
+
+static void DestroySwapchain(JstSwapchain swapchain) {
+  JstVkSwapchain* jstVkSwapchain = (JstVkSwapchain*)swapchain;
+  vkDestroySurfaceKHR(instance, jstVkSwapchain->surface, nullptr);
+  // vkDestroySwapchainKHR(jstVkSwapchain->device, jstVkSwapchain->swapchain, nullptr);
 }
 
 namespace jst {
@@ -99,6 +175,14 @@ namespace jst {
 void InitVulkan(JstBool validationEnabled) {
   VK_CHECK(volkInitialize());
 
+  std::vector<const char*> instanceLayers;
+  if (validationEnabled) {
+    instanceLayers.push_back("VK_LAYER_KHRONOS_validation");
+  }
+  std::vector<const char*> instanceExtensions{
+    VK_KHR_SURFACE_EXTENSION_NAME,
+    VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+  };
   VkApplicationInfo applicationInfo{
     .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
     .apiVersion = VK_API_VERSION_1_3,
@@ -106,6 +190,10 @@ void InitVulkan(JstBool validationEnabled) {
   VkInstanceCreateInfo instanceInfo{
     .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
     .pApplicationInfo = &applicationInfo,
+    .enabledLayerCount = (uint32_t)instanceLayers.size(),
+    .ppEnabledLayerNames = instanceLayers.data(),
+    .enabledExtensionCount = (uint32_t)instanceExtensions.size(),
+    .ppEnabledExtensionNames = instanceExtensions.data(),
   };
   VK_CHECK(vkCreateInstance(&instanceInfo, nullptr, &instance));
 

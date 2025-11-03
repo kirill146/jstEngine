@@ -11,5 +11,7 @@ public:
 private:
   Window window;
   JstDevice device;
+  JstQueue queue;
+  JstSwapchain swapchain;
 };
 } // namespace jst

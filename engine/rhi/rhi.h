@@ -31,18 +31,22 @@ struct JstPhysicalDevice {
 #define JST_DEFINE_HANDLE(obj) typedef void* Jst##obj
 JST_DEFINE_HANDLE(Queue);
 JST_DEFINE_HANDLE(Device);
+JST_DEFINE_HANDLE(Swapchain);
 
 typedef int JstBool;
 
 // MACRO's arguments should be (f, ret, args)
-#define JST_FOREACH_RHI_FUNCTION(MACRO)                                                            \
-  MACRO(GetPhysicalDevices, int, (const JstPhysicalDevice** physicalDevices));                     \
-  MACRO(DestroyRHI, void, ());                                                                     \
-  MACRO(CreateDevice, JstResult,                                                                   \
-        (int physicalDeviceId, JstDevice* device, JstQueue* graphicsQueue, JstQueue* computeQueue, \
-         JstQueue* transferQueue));                                                                \
-  MACRO(DestroyDevice, void, (JstDevice device));                                                  \
-  MACRO(CreateSwapchain, JstResult, (int width, int height));
+#define JST_FOREACH_RHI_FUNCTION(MACRO)                                                                                \
+  MACRO(GetPhysicalDevices, int, (const JstPhysicalDevice** physicalDevices));                                         \
+  MACRO(DestroyRHI, void, ());                                                                                         \
+  MACRO(CreateDevice, JstResult,                                                                                       \
+        (int physicalDeviceId, JstDevice* device, JstQueue* graphicsQueue, JstQueue* computeQueue,                     \
+         JstQueue* transferQueue));                                                                                    \
+  MACRO(DestroyDevice, void, (JstDevice device));                                                                      \
+  MACRO(CreateSwapchain, JstResult,                                                                                    \
+        (JstDevice device, JstQueue graphicsQueue, void* windowHandle, uint32_t minImageCount, uint32_t width,         \
+         uint32_t height, JstSwapchain* swapchain));                                                                   \
+  MACRO(DestroySwapchain, void, (JstSwapchain swapchain));
 
 #define JST_TYPEDEF_RHI_FUNCTION(f, ret, args) typedef ret(*PFN_##jst##f) args
 #define JST_DECLARE_RHI_FUNCTION_EXTERN(f, ret, args) extern PFN_##jst##f jst##f

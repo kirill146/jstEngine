@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <thread>
 
-extern "C" int IsDebuggerPresent(); // don't include <Windows.h> just for this function
+extern "C" int __declspec(dllimport) IsDebuggerPresent(); // don't include <Windows.h> just for this function
 
 void CheckJstError(JstResult err, const char* file, int line) {
   if (err == JstSuccess) {
@@ -36,8 +36,9 @@ jst::HelloTriangleDemo::HelloTriangleDemo(JstGraphicsBackend api, bool validateA
     throw std::runtime_error("Device not found");
   }
 
-  JstQueue queue;
   JST_CHECK(jstCreateDevice(physicalDeviceId, &device, &queue, nullptr, nullptr));
+
+  JST_CHECK(jstCreateSwapchain(device, queue, window.GetHwnd(), 2, window.GetWidth(), window.GetHeight(), &swapchain));
 }
 
 void jst::HelloTriangleDemo::Run() {
@@ -47,6 +48,7 @@ void jst::HelloTriangleDemo::Run() {
 }
 
 jst::HelloTriangleDemo::~HelloTriangleDemo() {
+  jstDestroySwapchain(swapchain);
   jstDestroyDevice(device);
   jstDestroyRHI();
 }
