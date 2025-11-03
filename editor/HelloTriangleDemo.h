@@ -4,7 +4,7 @@
 namespace jst {
 class HelloTriangleDemo {
 public:
-  explicit HelloTriangleDemo();
+  explicit HelloTriangleDemo(JstGraphicsBackend api, bool validateAPI);
   void Run();
   ~HelloTriangleDemo();
 private:
