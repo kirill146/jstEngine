@@ -100,6 +100,7 @@ static void DestroyDevice(JstDevice device) {
   if (dev->copyQueue) {
     dev->copyQueue->Release();
   }
+  delete dev;
 }
 
 void jst::InitD3D12(JstBool validationEnabled) {
