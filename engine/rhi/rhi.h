@@ -43,6 +43,7 @@ typedef int JstBool;
         (int physicalDeviceId, JstDevice* device, JstQueue* graphicsQueue, JstQueue* computeQueue,                     \
          JstQueue* transferQueue));                                                                                    \
   MACRO(DestroyDevice, void, (JstDevice device));                                                                      \
+  /* width and height don't have effect on Win32, swapchain image size is determined by HWND's client area */          \
   MACRO(CreateSwapchain, JstResult,                                                                                    \
         (JstDevice device, JstQueue graphicsQueue, void* windowHandle, uint32_t minImageCount, uint32_t width,         \
          uint32_t height, JstSwapchain* swapchain));                                                                   \
