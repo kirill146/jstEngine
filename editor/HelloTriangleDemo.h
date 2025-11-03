@@ -1,5 +1,6 @@
 #pragma once
 #include "rhi/rhi.h"
+#include "platform/platformWin32.h"
 
 namespace jst {
 class HelloTriangleDemo {
@@ -8,6 +9,7 @@ public:
   void Run();
   ~HelloTriangleDemo();
 private:
+  Window window;
   JstDevice device;
 };
 } // namespace jst

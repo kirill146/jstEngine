@@ -8,9 +8,12 @@ add_library(engine
   rhi/vkRHI.cpp
   rhi/d3d12RHI.h
   rhi/d3d12RHI.cpp
+  platform/platformWin32.h
+  platform/platformWin32.cpp
 )
 target_link_libraries(engine PRIVATE d3d12 dxgi)
 target_compile_features(engine PUBLIC cxx_std_20)
+target_compile_definitions(engine PRIVATE UNICODE)
 target_include_directories(engine PRIVATE
   ${Vulkan_INCLUDE_DIR}
   ../external/agility-sdk-${AGILITY_SDK_VERSION}/build/native/include

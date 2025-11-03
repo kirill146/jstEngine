@@ -1,6 +1,8 @@
 #include "HelloTriangleDemo.h"
+#include <chrono>
 #include <iostream>
 #include <stdexcept>
+#include <thread>
 
 extern "C" int IsDebuggerPresent(); // don't include <Windows.h> just for this function
 
@@ -16,7 +18,8 @@ void CheckJstError(JstResult err, const char* file, int line) {
 
 #define JST_CHECK(err) CheckJstError(err, __FILE__, __LINE__)
 
-jst::HelloTriangleDemo::HelloTriangleDemo(JstGraphicsBackend api, bool validateAPI) {
+jst::HelloTriangleDemo::HelloTriangleDemo(JstGraphicsBackend api, bool validateAPI)
+    : window(1920, 1080) {
   JST_CHECK(jstInitRHI(api, validateAPI));
   const JstPhysicalDevice* physicalDevices;
   int nDevices = jstGetPhysicalDevices(&physicalDevices);
@@ -37,7 +40,11 @@ jst::HelloTriangleDemo::HelloTriangleDemo(JstGraphicsBackend api, bool validateA
   JST_CHECK(jstCreateDevice(physicalDeviceId, &device, &queue, nullptr, nullptr));
 }
 
-void jst::HelloTriangleDemo::Run() {}
+void jst::HelloTriangleDemo::Run() {
+  while (!window.ShouldQuit()) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+}
 
 jst::HelloTriangleDemo::~HelloTriangleDemo() {
   jstDestroyDevice(device);
