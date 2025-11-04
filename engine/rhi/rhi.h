@@ -23,9 +23,14 @@ enum JstPhysDevFlags {
 };
 typedef uint32_t JstPhysDevFlagsMask;
 
+uint32_t const N_QUEUES_UNKNOWN = 0xffffffff;
+
 struct JstPhysicalDevice {
   char name[256];
   JstPhysDevFlagsMask flags;
+  uint32_t nGraphicsQueues;
+  uint32_t nComputeQueues;
+  uint32_t nTransferQueues;
 };
 
 #define JST_DEFINE_HANDLE(obj) typedef void* Jst##obj

@@ -342,15 +342,18 @@ void InitVulkan(JstBool validationEnabled) {
           // graphics + compute + transfer queues
           deviceQueueFamilyIndices[i].graphicsQueueFamilyIndex = j;
           physicalDevices[i].flags |= JstPhysDevHasGraphicsQueue;
+          physicalDevices[i].nGraphicsQueues = queueFamilyProps[j].queueCount;
         } else {
           // dedicated compute + transfer queues
           deviceQueueFamilyIndices[i].computeQueueFamilyIndex = j;
           physicalDevices[i].flags |= JstPhysDevHasComputeQueue;
+          physicalDevices[i].nComputeQueues = queueFamilyProps[j].queueCount;
         }
       } else if ((flags & ~VK_QUEUE_SPARSE_BINDING_BIT) == VK_QUEUE_TRANSFER_BIT) {
         // dedicated transfer queues
         deviceQueueFamilyIndices[i].transferQueueFamilyIndex = j;
         physicalDevices[i].flags |= JstPhysDevHasTransferQueue;
+        physicalDevices[i].nTransferQueues = queueFamilyProps[j].queueCount;
       }
     }
   }
