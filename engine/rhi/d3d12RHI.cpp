@@ -126,9 +126,13 @@ void jst::InitD3D12(JstBool validationEnabled) {
   for (UINT i = 0; factory->EnumAdapters1(i, &adapter) != DXGI_ERROR_NOT_FOUND; i++) {
     DXGI_ADAPTER_DESC1 adapterInfo;
     DX_CHECK(adapter->GetDesc1(&adapterInfo));
+    dxgiAdapters.push_back(adapter);
+
     physicalDevices.push_back({});
     wcstombs(physicalDevices.back().name, adapterInfo.Description, sizeof(physicalDevices.back().name));
-    dxgiAdapters.push_back(adapter);
+    physicalDevices.back().nGraphicsQueues = JST_N_QUEUES_UNKNOWN;
+    physicalDevices.back().nComputeQueues = JST_N_QUEUES_UNKNOWN;
+    physicalDevices.back().nTransferQueues = JST_N_QUEUES_UNKNOWN;
   }
 
 #define JST_SET_RHI_FUNCTION(f, ret, args) jst##f = f

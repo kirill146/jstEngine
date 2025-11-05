@@ -27,11 +27,7 @@ jst::HelloTriangleDemo::HelloTriangleDemo(JstGraphicsBackend api, bool validateA
 
   int physicalDeviceId = -1;
   for (int i = 0; i < nDevices; i++) {
-    std::cout << i << ' '
-      << physicalDevices[i].name << ' '
-      << physicalDevices[i].nGraphicsQueues << ' '
-      << physicalDevices[i].nComputeQueues << ' '
-      << physicalDevices[i].nTransferQueues << std::endl;
+    std::cout << i << ' ' << physicalDevices[i].name << std::endl;
     if (std::string(physicalDevices[i].name).find("NVIDIA") != std::string::npos) { // TODO: bruh
       physicalDeviceId = i;
     }

@@ -23,7 +23,7 @@ enum JstPhysDevFlags {
 };
 typedef uint32_t JstPhysDevFlagsMask;
 
-uint32_t const N_QUEUES_UNKNOWN = 0xffffffff;
+const uint32_t JST_N_QUEUES_UNKNOWN = 0xffffffff;
 
 struct JstPhysicalDevice {
   char name[256];
